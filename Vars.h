@@ -39,8 +39,19 @@
 #define IRLeft A0
 
 
+//define Sensor threshold
+#define SharpThreshold 20
+
+
 //directions
 #define NORTH 0
 #define EAST 1
 #define SOUTH 2
 #define WEST 3
+
+
+// Maze definitions
+#define MAZECOLS 10
+#define MAZEROWS 10
+#define StartCol 5
+#define StartRow 5
