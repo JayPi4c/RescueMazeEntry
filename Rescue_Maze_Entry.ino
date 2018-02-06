@@ -5,6 +5,8 @@
 /*
     Edit am 21.1.18
     Edit am 28.1.18
+
+    Edit am 06.02.18 mit Git und Github
 */
 
 /*
