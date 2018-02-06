@@ -31,7 +31,7 @@
 */
 
 
-
+//includes
 #include "Vars.h"
 #include "engine.h"
 
@@ -41,6 +41,9 @@
 #include <SharpIR.h>
 #include <LiquidCrystal_I2C.h>
 
+
+
+// Initialisierung
 LiquidCrystal_I2C lcd(LCDAddress, LCDCols, LCDRows);
 
 volatile int encoderLeft = 0;
@@ -52,7 +55,7 @@ SharpIR sharpLF(IRLeft, 1080);
 
 
 
-
+// Werte der Entfernungssensoren
 int distanceNorthLeft = 0;
 int distanceNorthRight = 0;
 int distanceWestLeft = 0;
@@ -67,12 +70,15 @@ int distanceFrontRight = 0;
 int distanceLeft = 0;
 
 
-
+// Das eigentliche Labyrinth (Die Karte)
+// evtl. lohnt es sich auch diese in eine eigene Klasse einzubetten.
 Tile** maze;
 
+// Die aktuelle Position
 int currentCol = StartCol;
 int currentRow = StartRow;
 int DIRECTION = NORTH;
+
 
 void setup() {
   lcd.init();
@@ -90,7 +96,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(TACHO0), countencoderLeft, CHANGE);
   attachInterrupt(digitalPinToInterrupt(TACHO2), countencoderRight, CHANGE);
 
-
+// Initialisierung der Karte
   maze = new Tile*[MAZEROWS];
   for (int i = 0; i < MAZEROWS; i++) {
     maze[i] = new Tile[MAZECOLS];
@@ -98,12 +104,11 @@ void setup() {
 
 
 
-
+// setze die Drehrichtung der Motoren
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
-
 }
 
 
