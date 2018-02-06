@@ -7,8 +7,6 @@
     Edit am 28.1.18
 
     Edit am 06.02.18 Heute werden Sensoren ausgetestet!
-    one more edit
-    edit again
 */
 
 /*
