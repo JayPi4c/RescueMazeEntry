@@ -1,6 +1,8 @@
 #include "Arduino.h"
 #include "Vars.h"
 
+#ifndef Tile_h
+#define Tile_h
 class Tile{
   public:
     Tile(void);  //Konstruktor
@@ -14,7 +16,7 @@ class Tile{
     void setVisited(boolean state);
     boolean getVisited(void);
     
-  private:
+  private:  
     boolean WallNorth;
     boolean WallSouth;
     boolean WallEast;
@@ -23,3 +25,5 @@ class Tile{
     boolean black;
     boolean visited;
   };
+
+  #endif

@@ -36,6 +36,7 @@
 #include "engine.h"
 
 #include "Tile.h"
+#include "Map.h"
 
 
 #include <SharpIR.h>
@@ -45,6 +46,8 @@
 
 // Initialisierung
 LiquidCrystal_I2C lcd(LCDAddress, LCDCols, LCDRows);
+
+Map maze(MAZECOLS, MAZEROWS);
 
 volatile int encoderLeft = 0;
 volatile int encoderRight = 0;
@@ -72,7 +75,7 @@ int distanceLeft = 0;
 
 // Das eigentliche Labyrinth (Die Karte)
 // evtl. lohnt es sich auch diese in eine eigene Klasse einzubetten.
-Tile** maze;
+
 
 // Die aktuelle Position
 int currentCol = StartCol;
@@ -97,10 +100,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(TACHO2), countencoderRight, CHANGE);
 
 // Initialisierung der Karte
-  maze = new Tile*[MAZEROWS];
-  for (int i = 0; i < MAZEROWS; i++) {
-    maze[i] = new Tile[MAZECOLS];
-  }
+  
 
 
 
@@ -127,7 +127,8 @@ void loop() {
   // speichere das aktuelle Tile ab, in dem wir uns gerade befinden!
   lcd.clear();
   lcd.print("get current Tile");
-  Tile current = maze[currentCol][currentRow];
+  maze.setCurrent(currentCol, currentRow);
+  Tile current = maze.getCurrent();
   // setze das Tile als visited!
   delay(500);
   lcd.clear();
