@@ -1,7 +1,10 @@
 #include "Arduino.h"
 #include "Vars.h"
 
-class Tile{
+#ifndef Tile_h
+#define Tile_h
+
+class Tile {
   public:
     Tile(void);  //Konstruktor
     ~Tile(void); //Destruktor
@@ -13,7 +16,7 @@ class Tile{
     boolean getBlack(void);
     void setVisited(boolean state);
     boolean getVisited(void);
-    
+
   private:
     boolean WallNorth;
     boolean WallSouth;
@@ -22,4 +25,6 @@ class Tile{
     boolean Checkpoint;
     boolean black;
     boolean visited;
-  };
+};
+
+#endif
