@@ -5,7 +5,8 @@
 #ifndef Map_h
 #define Map_h
 
-
+// Diese Klasse soll das speichern einer Karte und somit das erreichen von Floating Walls
+// erleichtern!
 class Map{
   public:
   Map(int cols_, int rows_);
