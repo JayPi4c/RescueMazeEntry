@@ -36,7 +36,6 @@
 #include "engine.h"
 
 #include "Tile.h"
-#include "Map.h"
 
 
 #include <SharpIR.h>
@@ -47,7 +46,6 @@
 // Initialisierung
 LiquidCrystal_I2C lcd(LCDAddress, LCDCols, LCDRows);
 
-Map maze(MAZECOLS, MAZEROWS);
 
 volatile int encoderLeft = 0;
 volatile int encoderRight = 0;
@@ -127,26 +125,19 @@ void loop() {
   // speichere das aktuelle Tile ab, in dem wir uns gerade befinden!
   lcd.clear();
   lcd.print("get current Tile");
-  maze.setCurrent(currentCol, currentRow);
-  Tile current = maze.getCurrent();
   // setze das Tile als visited!
   delay(500);
   lcd.clear();
   lcd.print("set visited");
-  current.setVisited(true);
   delay(500);
 
   lcd.clear();
   lcd.print("set Walls");
   //setze die Werte, ob eine Wall an einer Seite ist oder nicht für das currentTile fest!
   //für den Norden
-  current.setWall(NORTH, checkWallNorth());
   //für den Westen
-  current.setWall(WEST, checkWallWest());
   //für den Süden
-  current.setWall(SOUTH, checkWallSouth());
   //für den Osten
-  current.setWall(EAST, checkWallEast());
   delay(500);
 
   lcd.clear();
