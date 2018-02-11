@@ -2,40 +2,9 @@
 
 // Angefangen am 8.1.18
 
-/*
-    Edit am 21.1.18
-    Edit am 28.1.18
-
-    Edit am 06.02.18 Heute werden Sensoren ausgetestet!
-*/
-
-/*
-  Die Loop schleife soll immmer das dier folgende Struktur folgen:
-
-  Auslesen der Sensorwerte
-  das aktuelle Tile, auf dem wir uns befinden temporär speichern
-  mache "Setupsachen" mit dem Tile, also speichere, ob es Wände gibt, ob es sich um ein Checkpoint handelt, oder ob es ein
-    schwarzes Feld ist.
-  überprüfe, ob rechts ein feld frei ist. Wenn ja:
-      Fahre dort hinein. (Achtung Richtung)
-      vollziehe das Programm wieder von vorne! (return;)
-  überprüfe, ob vorne ein Feld frei ist. Wenn ja:
-      Fahre dort hinein. (Achtung Richtung)
-      vollziehe das Programm wieder von vorne! (return;)
-  überprüfe, ob links ein Feld frei ist. Wenn ja:
-      Fahre dort hinein. (Achtung Richtung)
-      vollziehe das Prgramm wieder von vorne! (return!)
-  rechts, vorne und links sind unerreichbar -> umdrehen und zurückfahren
-      (Beachte,
-
-*/
-
-
 //includes
 #include "Vars.h"
 #include "engine.h"
-
-#include "Tile.h"
 
 
 #include <SharpIR.h>
@@ -54,31 +23,9 @@ SharpIR sharpFR(IRFrontRight, 1080);
 SharpIR sharpFL(IRFrontLeft, 20150);
 SharpIR sharpLF(IRLeft, 1080);
 
-
-
-// Werte der Entfernungssensoren
-int distanceNorthLeft = 0;
-int distanceNorthRight = 0;
-int distanceWestLeft = 0;
-int distanceWestRight = 0;
-int distanceSouthLeft = 0;
-int distanceSouthRight = 0;
-int distanceEastLeft = 0;
-int distanceEastRight = 0;
-
-int distanceFrontLeft = 0;
-int distanceFrontRight = 0;
-int distanceLeft = 0;
-
-
-// Das eigentliche Labyrinth (Die Karte)
-// evtl. lohnt es sich auch diese in eine eigene Klasse einzubetten.
-
-
-// Die aktuelle Position
-int currentCol = StartCol;
-int currentRow = StartRow;
-int DIRECTION = NORTH;
+int valueFR = 0;
+int valueFL = 0;
+int valueLF = 0;
 
 
 void setup() {
@@ -97,12 +44,9 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(TACHO0), countencoderLeft, CHANGE);
   attachInterrupt(digitalPinToInterrupt(TACHO2), countencoderRight, CHANGE);
 
-// Initialisierung der Karte
-  
 
 
-
-// setze die Drehrichtung der Motoren
+  // setze die Drehrichtung der Motoren
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
   digitalWrite(IN3, HIGH);
@@ -116,206 +60,50 @@ void setup() {
 
 void loop() {
 
-  // Lese alle Sensorwerte aus und speichere die Werte abhängig von der Ausrichtung (dir)!
   lcd.clear();
   lcd.print("read sensors");
-  readSensors(NORTH);
-  delay(500);
-
-  // speichere das aktuelle Tile ab, in dem wir uns gerade befinden!
-  lcd.clear();
-  lcd.print("get current Tile");
-  // setze das Tile als visited!
-  delay(500);
-  lcd.clear();
-  lcd.print("set visited");
-  delay(500);
-
-  lcd.clear();
-  lcd.print("set Walls");
-  //setze die Werte, ob eine Wall an einer Seite ist oder nicht für das currentTile fest!
-  //für den Norden
-  //für den Westen
-  //für den Süden
-  //für den Osten
-  delay(500);
-
-  lcd.clear();
-  //überprüfe, ob das rechte Feld erreichbar ist, also ob eine Wand dazwischen ist!
-  if (!checkRightWall(DIRECTION)) {
-    lcd.print("Rechts ist frei");
-  } else if (!checkFrontWall(DIRECTION)) {
-    lcd.print("Vorne ist frei");
-  } else if (!checkLeftWall(DIRECTION)) {
-    lcd.print("Links ist frei");
-  }else{
-    lcd.print("Nirgends ist frei");
-    }
-  delay(1000);
+  readSensors();
+  printValues();
 
 
-}
-
-// Lese die Werte der Sensoren aus und speichere sie abhängig von der aktuellen ausrichtung!
-void readSensors(int dir) {
-  switch (dir) {
-    case NORTH:
-      distanceNorthLeft = sharpFL.distance();
-      distanceNorthRight = sharpFR.distance();
-      distanceWestLeft = 0;
-      distanceWestRight = sharpLF.distance();
-      distanceSouthLeft = 0;
-      distanceSouthRight = 0;
-      distanceEastLeft = 0;
-      distanceEastRight = 0;
-      break;
-    case SOUTH:
-      distanceNorthLeft = 0;
-      distanceNorthRight = 0;
-      distanceWestLeft = 0;
-      distanceWestRight = 0;
-      distanceSouthLeft = sharpFL.distance();
-      distanceSouthRight = sharpFR.distance();
-      distanceEastLeft = 0;
-      distanceEastRight = sharpLF.distance();
-      break;
-    case WEST:
-      distanceNorthLeft = 0;
-      distanceNorthRight = 0;
-      distanceWestLeft = sharpFL.distance();
-      distanceWestRight = sharpFR.distance();
-      distanceSouthLeft = 0;
-      distanceSouthRight = sharpLF.distance();
-      distanceEastLeft = 0;
-      distanceEastRight = 0;
-      break;
-    case EAST:
-      distanceNorthLeft = 0;
-      distanceNorthRight = sharpLF.distance();
-      distanceWestLeft = 0;
-      distanceWestRight = 0;
-      distanceSouthLeft = 0;
-      distanceSouthRight = 0;
-      distanceEastLeft = sharpFL.distance();
-      distanceEastRight = sharpFR.distance();
-      break;
+  // Da nur zwei Sensoren funktionieren: LF und FR müssen wir das Linke Hand Prinzip verwenden!
+  if (valueLF > 10) {
+    // Wenn der Sensorwert des linken Sensors größer als 10 ist, dann ist links kein Hindernis und wir können uns nach links drehen
+    // und dann in das leere Feld fahren
+    turn(LEFT);
+    moveToNextTile();
+  } else if (valueFR > 25) {
+    // wenn der Sensorwert des Sensors nach vorne größer ist als 25, dann ist vorne kein Hindernis und wir können geradeaus weiterfahren
+    moveToNextTile();
+  } else {
+    // links und vorne ist ein Hindernis, als müssen wir uns nach rechts drehen und gucken, ob wir geradeaus fahren dürfen
+    // das heißt: nach rechts drehen und wieder neu in die Loop-Schleife gehen!
+    turn(RIGHT);
   }
 }
 
-boolean checkRightWall(int dir) {
-  switch (dir) {
-    case NORTH:
-      return checkWallEast();
-      break;
-    case WEST:
-      return checkWallNorth();
-      break;
-    case SOUTH:
-      return checkWallWest();
-      break;
-    case EAST:
-      return checkWallSouth();
-      break;
-    default:
-      return false;
-  }
+void readSensors() {
+  valueFR = sharpFR.distance();
+  valueFL = sharpFL.distance();
+  valueLF = sharpLF.distance();
 }
 
-boolean checkFrontWall(int dir) {
-  switch (dir) {
-    case NORTH:
-      return checkWallNorth();
-      break;
-    case WEST:
-      break;
-      return checkWallWest();
-      break;
-    case SOUTH:
-      return checkWallSouth();
-      break;
-    case EAST:
-      return checkWallEast();
-      break;
-    default:
-      return false;
-      break;
-  }
-}
-
-boolean checkLeftWall(int dir) {
-  switch (dir) {
-    case NORTH:
-      return checkWallWest();
-      break;
-    case WEST:
-      break;
-      return checkWallSouth();
-      break;
-    case SOUTH:
-      return checkWallEast();
-      break;
-    case EAST:
-      return checkWallNorth();
-      break;
-    default:
-      return false;
-      break;
-  }
-}
-
-boolean checkWallNorth() {
-  return (distanceNorthLeft < SharpThreshold || distanceNorthRight < SharpThreshold);
-}
-
-boolean checkWallWest() {
-  return (distanceWestLeft < SharpThreshold || distanceWestRight < SharpThreshold);
-}
-
-
-boolean checkWallSouth() {
-  return (distanceSouthLeft < SharpThreshold || distanceSouthRight < SharpThreshold);
-}
-
-boolean checkWallEast() {
-  return (distanceEastLeft < SharpThreshold || distanceEastRight < SharpThreshold);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-boolean WallFront() {
-  return distanceFrontRight < 20;
-}
-
-boolean WallLeft() {
-  return distanceLeft < 25;
-}
 
 void printValues() {
   lcd.clear();
-  lcd.print("FL:");
-  lcd.setCursor(4, 0);
-  lcd.print(distanceFrontLeft);
-  lcd.setCursor(10, 0);
   lcd.print("FR:");
-  lcd.setCursor(14, 0);
-  lcd.print(distanceFrontRight);
+  lcd.setCursor(4, 0);
+  lcd.print(valueFR);
   lcd.setCursor(0, 1);
-  lcd.print("LF:");
+  lcd.print("FL: ");
   lcd.setCursor(4, 1);
-  lcd.print(distanceLeft);
+  lcd.print(valueFL);
+  lcd.setCursor(0, 2);
+  lcd.print("LF: ");
+  lcd.setCursor(4, 2);
+  lcd.print(valueLF);
+  delay(1000);
 }
-
-
 
 
 
@@ -329,14 +117,6 @@ void countencoderLeft() {
 void countencoderRight() {
   encoderRight++;
 }
-
-
-void newTile() {
-  encoderRight = 0;
-  encoderLeft = 0;
-}
-
-
 
 void resetEncoder() {
   encoderLeft = 0;
@@ -356,7 +136,7 @@ void turn(int dir) {
 
   resetEncoder();
   if (dir == RIGHT) {
-    while (encoderLeft < leftTurnGoal && encoderRight < rightTurnGoal) {
+    while (encoderLeft < leftTurnGoal || encoderRight < rightTurnGoal) {
 
       if (encoderLeft < leftTurnGoal) {
         engineLeftForward();
@@ -373,13 +153,17 @@ void turn(int dir) {
       }
     }
   } else if (dir == LEFT) {
-    while (encoderLeft < leftTurnGoal && encoderRight < rightTurnGoal) {
-
+    while (encoderLeft < leftTurnGoal || encoderRight < rightTurnGoal) {
+      Serial.print("Enoder Wert rechts: ");
+      Serial.println(encoderRight);
+      Serial.print("Enoder Wert links: ");
+      Serial.println(encoderLeft);
       if (encoderLeft < leftTurnGoal) {
         engineLeftBackward();
         digitalWrite(enb, MIDDLESPEED);
       } else {
         engineLeftStop();
+        Serial.println("Engine Left Stop");
       }
 
       if (encoderRight < rightTurnGoal) {
@@ -387,6 +171,7 @@ void turn(int dir) {
         digitalWrite(ena, MIDDLESPEED);
       } else {
         engineRightStop();
+        Serial.println("Engine Right Stop");
       }
     }
 
@@ -396,68 +181,41 @@ void turn(int dir) {
   }
 }
 
-
+// laesst den Roboter ca. 40 cm nach voren fahren
 void moveToNextTile() {
+  // gebe aktuelle Informationen auf dem Display aus
   lcd.clear();
   lcd.print("reaching next Tile");
-  int valueLeft = 700;
-  int valueRight = 700;
-  while (encoderLeft < valueLeft && encoderRight < valueRight) {
-    if (encoderLeft < valueLeft) {
+  // leere die Werte der Encoder, damit nicht mit Werten von dem Drehen gearbeitet wird!
+  resetEncoder();
+
+  //solange beide Motoren noch nicht die Encoderziele erreicht haben. (Die Encoder müssen sich um x° gedreht haben, damit exakt
+  // 40 cm vorwärts gefahren wurde
+  while (encoderLeft < leftMoveGoal && encoderRight < rightMoveGoal) {
+    // wenn linkes Ziel erreicht wurde, aufhören zu drehen
+    if (encoderLeft < leftMoveGoal) {
       engineLeftForward();
       digitalWrite(enb, 255);
     } else {
       engineLeftStop();
     }
-    if (encoderRight < valueRight) {
+    // wenn rechtes Ziel erreicht wurde, aufhören zu drehen
+    if (encoderRight < rightMoveGoal) {
       engineRightForward();
       digitalWrite(ena, 255);
     }
     else {
       engineRightStop();
     }
-
-
-    /*if (onBlackTile) {
-      lcd.clear();
-      lcd.print("Yep: Black");
-      delay(1000);
-      break;
-      }*/
   }
-  /*if (onBlackTile) {
-    valueLeft = encoderLeft * 2;
-    valueRight = encoderRight * 2;
 
-    while (encoderLeft < valueLeft && encoderRight < valueRight) {
-      lcd.clear();
-      lcd.print("well, maybe black!");
-      delay(1000);
-      if (encoderLeft < valueLeft) {
-        engineLeftBackward();
-        digitalWrite(enb, 255);
-      } else {
-        engineLeftStop();
-      }
-      if (encoderRight < valueRight) {
-        engineRightBackward();
-        digitalWrite(ena, 255);
-      }
-      else {
-        engineRightStop();
-      }
-    }
-    onBlackTile = false;
-    }*/
-  //und jetzt müsste einmal nach rechts oder links gedreht werden
-
+  // anzeigen, dass 40 cm gefahren wurden
   lcd.clear();
   lcd.print("reached next Tile!");
   engineBackward();
   digitalWrite(ena, 0);
   digitalWrite(enb, 0);
-
+  // für eine Sekunde stoppen und erst weitermachen
   delay(1000);
   lcd.print("done");
-  newTile();
 }
