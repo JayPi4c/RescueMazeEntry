@@ -140,14 +140,14 @@ void turn(int dir) {
 
       if (encoderLeft < leftTurnGoal) {
         engineLeftForward();
-        digitalWrite(enb, MIDDLESPEED);
+        digitalWrite(enb, HIGHSPEED);
       } else {
         engineLeftStop();
       }
 
       if (encoderRight < rightTurnGoal) {
         engineRightBackward();
-        digitalWrite(ena, MIDDLESPEED);
+        digitalWrite(ena, HIGHSPEED);
       } else {
         engineRightStop();
       }
