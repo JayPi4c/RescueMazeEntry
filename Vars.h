@@ -33,10 +33,25 @@
 
 
 //define Sensors
+
+///////////////////////////////////////////////////
+/////////////////////// ^ /////////////////////////
+/////////////////////// | /////////////////////////
+///////////////////////////////////////////////////
+//////////            |  |
+//                    |  |
+//              ______|  |______
+//                          A11     
+//              ______    ______
+//                    |  |
+//                 A10|  |A9 
+//                    |  |
+
+
 #define IRFrontLeft A5
-#define IRFrontRight A1
-#define IRRight
-#define IRLeft A0
+#define IRFrontRight A11
+#define IRRightBack A9
+#define IRLeftBack A10
 
 
 //define Sensor threshold

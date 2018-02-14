@@ -19,13 +19,13 @@ LiquidCrystal_I2C lcd(LCDAddress, LCDCols, LCDRows);
 volatile int encoderLeft = 0;
 volatile int encoderRight = 0;
 
-SharpIR sharpFR(IRFrontRight, 1080);
-SharpIR sharpFL(IRFrontLeft, 20150);
-SharpIR sharpLF(IRLeft, 1080);
+SharpIR sharpLeftBack(IRLeftBack, 430);
+SharpIR sharpRightBack(IRRightBack, 430);
+SharpIR sharpFrontRight(IRFrontRight, 430);
 
+int valueLB = 0;
+int valueRB = 0;
 int valueFR = 0;
-int valueFL = 0;
-int valueLF = 0;
 
 
 void setup() {
@@ -67,7 +67,7 @@ void loop() {
 
 
   // Da nur zwei Sensoren funktionieren: LF und FR müssen wir das Linke Hand Prinzip verwenden!
-  if (valueLF > 10) {
+  if (valueLB > 10) {
     // Wenn der Sensorwert des linken Sensors größer als 10 ist, dann ist links kein Hindernis und wir können uns nach links drehen
     // und dann in das leere Feld fahren
     turn(LEFT);
@@ -83,25 +83,25 @@ void loop() {
 }
 
 void readSensors() {
-  valueFR = sharpFR.distance();
-  valueFL = sharpFL.distance();
-  valueLF = sharpLF.distance();
+  valueLB = sharpLeftBack.distance();
+  valueFR = sharpFrontRight.distance();
+  valueRB = sharpRightBack.distance();
 }
 
 
 void printValues() {
   lcd.clear();
-  lcd.print("FR:");
+  lcd.print("LB:");
   lcd.setCursor(4, 0);
-  lcd.print(valueFR);
+  lcd.print(valueLB);
   lcd.setCursor(0, 1);
-  lcd.print("FL: ");
+  lcd.print("FR: ");
   lcd.setCursor(4, 1);
-  lcd.print(valueFL);
+  lcd.print(valueFR);
   lcd.setCursor(0, 2);
-  lcd.print("LF: ");
+  lcd.print("RB: ");
   lcd.setCursor(4, 2);
-  lcd.print(valueLF);
+  lcd.print(valueRB);
   delay(1000);
 }
 
