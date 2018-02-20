@@ -1,5 +1,3 @@
-
-
 // Angefangen am 8.1.18
 
 //includes
@@ -41,8 +39,8 @@ void setup() {
   pinMode(IN2, OUTPUT);
   pinMode(IN3, OUTPUT);
   pinMode(IN4, OUTPUT);
-  attachInterrupt(digitalPinToInterrupt(TACHO0), countencoderLeft, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(TACHO2), countencoderRight, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(TACHO2), countencoderLeft, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(TACHO0), countencoderRight, CHANGE);
 
 
 
@@ -160,7 +158,7 @@ void turn(int dir) {
       Serial.println(encoderLeft);
       if (encoderLeft < leftTurnGoal) {
         engineLeftBackward();
-        digitalWrite(enb, MIDDLESPEED);
+        digitalWrite(enb, HIGHSPEED);
       } else {
         engineLeftStop();
         Serial.println("Engine Left Stop");
@@ -168,7 +166,7 @@ void turn(int dir) {
 
       if (encoderRight < rightTurnGoal) {
         engineRightForward();
-        digitalWrite(ena, MIDDLESPEED);
+        digitalWrite(ena, HIGHSPEED);
       } else {
         engineRightStop();
         Serial.println("Engine Right Stop");
@@ -195,14 +193,14 @@ void moveToNextTile() {
     // wenn linkes Ziel erreicht wurde, aufhören zu drehen
     if (encoderLeft < leftMoveGoal) {
       engineLeftForward();
-      digitalWrite(enb, 255);
+      digitalWrite(enb, HIGHSPEED);
     } else {
       engineLeftStop();
     }
     // wenn rechtes Ziel erreicht wurde, aufhören zu drehen
     if (encoderRight < rightMoveGoal) {
       engineRightForward();
-      digitalWrite(ena, 255);
+      digitalWrite(ena, HIGHSPEED);
     }
     else {
       engineRightStop();
@@ -213,8 +211,8 @@ void moveToNextTile() {
   lcd.clear();
   lcd.print("reached next Tile!");
   engineBackward();
-  digitalWrite(ena, 0);
-  digitalWrite(enb, 0);
+  digitalWrite(ena, OFF);
+  digitalWrite(enb, OFF);
   // für eine Sekunde stoppen und erst weitermachen
   delay(1000);
   lcd.print("done");

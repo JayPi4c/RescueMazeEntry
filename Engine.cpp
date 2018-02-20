@@ -16,8 +16,8 @@ void engineRightForward() {
 }
 
 void engineLeftForward() {
-  digitalWrite(IN3, HIGH);
-  digitalWrite(IN4, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
 }
 
 void engineRightBackward() {
@@ -26,8 +26,8 @@ void engineRightBackward() {
 }
 
 void engineLeftBackward() {
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, HIGH);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
 }
 
 void engineLeftStop() {
