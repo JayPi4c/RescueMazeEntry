@@ -11,6 +11,7 @@
 
 
 
+
 // Initialisierung
 LiquidCrystal_I2C lcd(LCDAddress, LCDCols, LCDRows);
 
@@ -29,6 +30,9 @@ int valueRB = 0;
 int valueFR = 0;
 int valueFL = 0;
 int valueLF = 0;
+
+int graySclL = 0;
+int graySclR = 0;
 
 
 void setup() {
@@ -67,26 +71,39 @@ void loop() {
   lcd.print("read sensors");
   readSensors();
   printValues();
-
+  lcd.clear();
+  lcd.print("hi");
+  //lcd.print((graySclL+graySclR)/2);
+  if(graySclL < 160 || graySclR < 160){
+    lcd.clear();
+    lcd.print("CHECKPOINT");
+    delay(500);
+    }
 
   // Da nur zwei Sensoren funktionieren: LF und FR müssen wir das Linke Hand Prinzip verwenden!
-  if (valueLB > 10 && valueFL > 10) {
+  if (valueLB > 10 && valueLF > 10) {
     // Wenn der Sensorwert des linken Sensors größer als 10 ist, dann ist links kein Hindernis und wir können uns nach links drehen
     // und dann in das leere Feld fahren
     turn(LEFT);
-    moveToNextTile();
+    moveToNextTile(0);
   } else if (valueFL > 10 && valueFR > 10) {
+    int offset = 0;
+    if(valueLF < 6){
+      offset = -140;
+      }else if (valueLF > 7){
+        offset = 140;
+        }
     // wenn der Sensorwert des Sensors nach vorne größer ist als 25, dann ist vorne kein Hindernis und wir können geradeaus weiterfahren
-    moveToNextTile();
+    moveToNextTile(offset);
   } else if(valueRB > 10){
     // rechts ist keine Wand, dort wird hineingefahren
     turn(RIGHT);
-    moveToNextTile();
+    moveToNextTile(0);
   }else{
     // links, vorne und rechts sind Hindernisse, wir müssen umdrehen
     turn(RIGHT);
     turn(RIGHT);
-    moveToNextTile();
+    moveToNextTile(0);
     }
 }
 
@@ -96,6 +113,9 @@ void readSensors() {
   valueRB = sharpRightBack.distance();
   valueFL = sharpFrontLeft.distance();
   valueLF = readLeftFront(sharpLeftFront);
+
+  graySclL = analogRead(grSclL);
+  graySclR = analogRead(grSclR);
 }
 
 
@@ -192,7 +212,7 @@ void turn(int dir) {
 }
 
 // laesst den Roboter ca. 40 cm nach voren fahren
-void moveToNextTile() {
+void moveToNextTile(int offset) {
   // gebe aktuelle Informationen auf dem Display aus
   lcd.clear();
   lcd.print("reaching next Tile");
@@ -201,7 +221,7 @@ void moveToNextTile() {
 
   //solange beide Motoren noch nicht die Encoderziele erreicht haben. (Die Encoder müssen sich um x° gedreht haben, damit exakt
   // 40 cm vorwärts gefahren wurde
-  while (encoderLeft < leftMoveGoal && encoderRight < rightMoveGoal) {
+  while (encoderLeft < leftMoveGoal && encoderRight < rightMoveGoal + offset) {
     // wenn linkes Ziel erreicht wurde, aufhören zu drehen
     if (encoderLeft < leftMoveGoal) {
       engineLeftForward();

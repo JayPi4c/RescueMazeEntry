@@ -28,11 +28,11 @@
 #define LEFT 0
 #define RIGHT 1
 
-#define leftTurnGoal 425
-#define rightTurnGoal 425
+#define leftTurnGoal 440
+#define rightTurnGoal 440
 
-#define rightMoveGoal 800
-#define leftMoveGoal 800
+#define rightMoveGoal 825
+#define leftMoveGoal 825
 
 #define HIGHSPEED 255
 #define MIDDLESPEED 170
