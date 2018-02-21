@@ -3,6 +3,7 @@
 //includes
 #include "Vars.h"
 #include "engine.h"
+#include "Util.h"
 
 
 #include "SharpIR.h"
@@ -69,19 +70,24 @@ void loop() {
 
 
   // Da nur zwei Sensoren funktionieren: LF und FR müssen wir das Linke Hand Prinzip verwenden!
-  if (valueLB > 10) {
+  if (valueLB > 10 && valueFL > 10) {
     // Wenn der Sensorwert des linken Sensors größer als 10 ist, dann ist links kein Hindernis und wir können uns nach links drehen
     // und dann in das leere Feld fahren
     turn(LEFT);
     moveToNextTile();
-  } else if (valueFR > 25) {
+  } else if (valueFL > 10 && valueFR > 10) {
     // wenn der Sensorwert des Sensors nach vorne größer ist als 25, dann ist vorne kein Hindernis und wir können geradeaus weiterfahren
     moveToNextTile();
-  } else {
-    // links und vorne ist ein Hindernis, als müssen wir uns nach rechts drehen und gucken, ob wir geradeaus fahren dürfen
-    // das heißt: nach rechts drehen und wieder neu in die Loop-Schleife gehen!
+  } else if(valueRB > 10){
+    // rechts ist keine Wand, dort wird hineingefahren
     turn(RIGHT);
-  }
+    moveToNextTile();
+  }else{
+    // links, vorne und rechts sind Hindernisse, wir müssen umdrehen
+    turn(RIGHT);
+    turn(RIGHT);
+    moveToNextTile();
+    }
 }
 
 void readSensors() {
