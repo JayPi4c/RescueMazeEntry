@@ -56,11 +56,11 @@
 //                    |  |
 
 
-#define IRFrontLeft A0
-#define IRFrontRight A4
-#define IRRightBack A5
-#define IRLeftBack A6
-#define IRLeftFront A1
+#define IRFrontLeft A0  // 1080
+#define IRLeftFront A1  // 430
+#define IRFrontRight A4 // 430
+#define IRRightBack A5  // 430
+#define IRLeftBack A6   // 430
 
 #define grSclL A8
 #define grSclR A9

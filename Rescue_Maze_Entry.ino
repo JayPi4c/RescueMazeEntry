@@ -20,10 +20,14 @@ volatile int encoderRight = 0;
 SharpIR sharpLeftBack(IRLeftBack, 430);
 SharpIR sharpRightBack(IRRightBack, 430);
 SharpIR sharpFrontRight(IRFrontRight, 430);
+SharpIR sharpFrontLeft(IRFrontLeft, 1080);
+SharpIR sharpLeftFront(IRLeftFront, 1080);
 
 int valueLB = 0;
 int valueRB = 0;
 int valueFR = 0;
+int valueFL = 0;
+int valueLF = 0;
 
 
 void setup() {
@@ -84,6 +88,8 @@ void readSensors() {
   valueLB = sharpLeftBack.distance();
   valueFR = sharpFrontRight.distance();
   valueRB = sharpRightBack.distance();
+  valueFL = sharpFrontLeft.distance();
+  valueLF = readLeftFront(sharpLeftFront);
 }
 
 
