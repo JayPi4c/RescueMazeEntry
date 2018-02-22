@@ -23,7 +23,7 @@ SharpIR sharpLeftBack(IRLeftBack, 430);
 SharpIR sharpRightBack(IRRightBack, 430);
 SharpIR sharpFrontRight(IRFrontRight, 430);
 SharpIR sharpFrontLeft(IRFrontLeft, 1080);
-SharpIR sharpLeftFront(IRLeftFront, 1080);
+SharpIR sharpLeftFront(IRLeftFront, 430);
 
 int valueLB = 0;
 int valueRB = 0;
