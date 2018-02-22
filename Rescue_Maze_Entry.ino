@@ -72,8 +72,6 @@ void loop() {
   readSensors();
   printValues();
   lcd.clear();
-  lcd.print("hi");
-  //lcd.print((graySclL+graySclR)/2);
   if(graySclL < 160 || graySclR < 160){
     lcd.clear();
     lcd.print("CHECKPOINT");
@@ -86,6 +84,7 @@ void loop() {
     // und dann in das leere Feld fahren
     turn(LEFT);
     moveToNextTile(0);
+    // checke ob vorne frei ist
   } else if (valueFL > 10 && valueFR > 10) {
     int offset = 0;
     if(valueLF < 6){
@@ -170,14 +169,14 @@ void turn(int dir) {
 
       if (encoderLeft < leftTurnGoal) {
         engineLeftForward();
-        digitalWrite(enb, HIGHSPEED);
+        analogWrite(enb, HIGHSPEED);
       } else {
         engineLeftStop();
       }
 
       if (encoderRight < rightTurnGoal) {
         engineRightBackward();
-        digitalWrite(ena, HIGHSPEED);
+        analogWrite(ena, HIGHSPEED);
       } else {
         engineRightStop();
       }
@@ -190,7 +189,7 @@ void turn(int dir) {
       Serial.println(encoderLeft);
       if (encoderLeft < leftTurnGoal) {
         engineLeftBackward();
-        digitalWrite(enb, HIGHSPEED);
+        analogWrite(enb, HIGHSPEED);
       } else {
         engineLeftStop();
         Serial.println("Engine Left Stop");
@@ -198,7 +197,7 @@ void turn(int dir) {
 
       if (encoderRight < rightTurnGoal) {
         engineRightForward();
-        digitalWrite(ena, HIGHSPEED);
+        analogWrite(ena, HIGHSPEED);
       } else {
         engineRightStop();
         Serial.println("Engine Right Stop");
@@ -221,18 +220,23 @@ void moveToNextTile(int offset) {
 
   //solange beide Motoren noch nicht die Encoderziele erreicht haben. (Die Encoder müssen sich um x° gedreht haben, damit exakt
   // 40 cm vorwärts gefahren wurde
-  while (encoderLeft < leftMoveGoal && encoderRight < rightMoveGoal + offset) {
+  while (encoderLeft < leftMoveGoal && encoderRight < (rightMoveGoal + offset)) {
+    lcd.clear();
+    int n = (rightMoveGoal + offset) - encoderRight;
+    lcd.print(n);
+    lcd.setCursor(0, 1);
+    lcd.print(" to go!");
     // wenn linkes Ziel erreicht wurde, aufhören zu drehen
     if (encoderLeft < leftMoveGoal) {
       engineLeftForward();
-      digitalWrite(enb, HIGHSPEED);
+      analogWrite(enb, HIGHSPEED);
     } else {
       engineLeftStop();
     }
     // wenn rechtes Ziel erreicht wurde, aufhören zu drehen
-    if (encoderRight < rightMoveGoal) {
+    if (encoderRight < rightMoveGoal + offset) {
       engineRightForward();
-      digitalWrite(ena, HIGHSPEED);
+      analogWrite(ena, HIGHSPEED);
     }
     else {
       engineRightStop();
@@ -243,8 +247,8 @@ void moveToNextTile(int offset) {
   lcd.clear();
   lcd.print("reached next Tile!");
   engineBackward();
-  digitalWrite(ena, OFF);
-  digitalWrite(enb, OFF);
+  analogWrite(ena, OFF);
+  analogWrite(enb, OFF);
   // für eine Sekunde stoppen und erst weitermachen
   delay(1000);
   lcd.print("done");
